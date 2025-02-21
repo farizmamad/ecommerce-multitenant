@@ -1,4 +1,7 @@
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DatabaseModule } from '../database/database.module';
+import { PrismaModule } from '../prisma/prisma.module';
 import { TenantService } from './tenant.service';
 
 describe('TenantService', () => {
@@ -6,8 +9,10 @@ describe('TenantService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, DatabaseModule],
       providers: [TenantService],
-    }).compile();
+    })
+    .compile();
 
     service = module.get<TenantService>(TenantService);
   });

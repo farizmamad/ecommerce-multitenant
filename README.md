@@ -55,6 +55,17 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Create a new tenant
+High level algorithm to create tenants:
+1. Create database name from input. Then, act as admin and create a new tenant database using the database name.
+2. Create database schema 'public' for the new tenant database.
+3. Apply migration to the new tenant database.
+4. return the new tenant record.
+
+```bash
+curl -H "Content-Type: application/json" -X POST -d '{"name":"Tenant 1","subdomain":"tenant1"}' {host_url}/tenants
+```
+
 ## Stay in touch
 
 - Author - Ahmad Fariz
