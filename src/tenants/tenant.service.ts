@@ -107,6 +107,10 @@ export class TenantService {
     return new TenantDto(tenant);
   }
 
+  async applyMigrationsToManagementDatabase() {
+    await this.tenantMigrationService.applyMigrationsToManagementDatabase();
+  }
+
   async applyMigrationsToTenantDatabase(tenantId: string) {
     const tenant = await this.findById(tenantId);
     if (!tenant) throw new NotFoundException('Unknown tenant');

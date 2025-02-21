@@ -25,12 +25,14 @@ model Tenant {
 
   User User[]
   Product Product[]
+  Order Order[]
 }
 
 model User {
   id String  @default(uuid()) @id
   name String
   username String @unique
+  email String?
   password String
   salt String
   role String
@@ -39,6 +41,8 @@ model User {
 
   tenantId String?
   tenant Tenant? @relation(fields: [tenantId], references: [id])
+
+  Order Order[]
 }
 
 model Product {
@@ -48,6 +52,31 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
+  tenantId String?
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
+  Order Order[]
+}
+
+model Order {
+  id String  @default(uuid()) @id
+  
+  customerName String
+  customerEmail String
+  customerId String
+  customer User @relation(fields: [customerId], references: [id])
+  
+  productName String
+  productId String
+  product Product @relation(fields: [productId], references: [id])
+  
+  total Float
+  paidAt DateTime?
+  paymentStatus String
+  paymentUrl String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   tenantId String?
   tenant Tenant? @relation(fields: [tenantId], references: [id])
 }

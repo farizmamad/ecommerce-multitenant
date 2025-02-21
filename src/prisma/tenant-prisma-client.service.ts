@@ -26,6 +26,11 @@ export class TenantPrismaClientService {
     const client = await this.getClient();
     return client.product;
   }
+
+  async order() {
+    const client = await this.getClient();
+    return client.order;
+  }
   
   /**
    * 

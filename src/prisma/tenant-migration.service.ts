@@ -4,10 +4,38 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ITenant } from 'src/common/interfaces/tenant.interface';
 import { PrismaClientFactoryService } from './prisma-client-factory.service';
+import { ManagementPrismaClientService } from './management-prisma-client.service';
 
 @Injectable()
 export class TenantMigrationService {
-  constructor(private prismaFactory: PrismaClientFactoryService) {}
+  constructor(
+    private managementClient: ManagementPrismaClientService,
+    private prismaFactory: PrismaClientFactoryService
+  ) {}
+  
+  async applyMigrationsToManagementDatabase(): Promise<void> {  
+    const client = await this.managementClient.getClient();
+      
+    try {
+      // Apply migrations
+      const migrationsPath = path.join(process.cwd(), 'prisma', 'migrations');
+      const migrations = fs.readdirSync(migrationsPath).sort();
+      
+      // Track applied migrations
+      await this.ensureMigrationsTable(client);
+      const appliedMigrations = await this.getAppliedMigrations(client);
+      
+      for (const migration of migrations) {
+        if (migration.startsWith('migration_lock')) continue;
+        if (!appliedMigrations.includes(migration)) {
+          await this.applyMigration(client, migration, migrationsPath);
+          await this.recordMigration(client, migration);
+        }
+      }
+    } finally {
+      await client.$disconnect();
+    }
+  }
   
   async applyMigrations(tenant: ITenant): Promise<void> {
     const client = this.prismaFactory.createPrismaClient(tenant);

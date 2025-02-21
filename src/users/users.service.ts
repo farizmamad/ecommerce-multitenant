@@ -17,11 +17,11 @@ export class UsersService {
     });
   }
 
-  async findOne(username: string): Promise<IUser | undefined> {
+  async findOne(id: string): Promise<IUser | undefined> {
     const userDb = await this.managementClient.user();
     return await userDb.findUnique({
       select: { id: true, name: true, role: true, username: true, tenant: true, tenantId: true },
-      where: { username },
+      where: { id },
     });
   }
 

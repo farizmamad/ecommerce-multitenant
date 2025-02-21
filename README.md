@@ -23,10 +23,31 @@ REST API for:
 3. Caching
 4. Unit and Integration testing
 
+## Requirements
+
+Node.js v20
+PostgreSQL
+Redis
+
+## Multi-tenancy Security
+
+Every request guarded by TenantGuard will get the Tenant information in the Middleware.
+
+Admin users can only manage its Tenant records.
+Customer users can read allowed records from every Tenants.
+
+If Admin tries to access records from different tenants, the user will receive 'Tenant is not found' exception.
+
 ## Installation
 
 ```bash
 $ npm install
+```
+
+## Deploy Database migrations
+
+```bash
+npx prisma migrate deploy
 ```
 
 ## Running the app
@@ -55,14 +76,11 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Multi-tenancy Security
+## Apply Migrations to tenants databases
 
-Every request guarded by TenantGuard will get the Tenant information in the Middleware.
-
-Admin users can only manage its Tenant records.
-Customer users can read allowed records from every Tenants.
-
-If Admin tries to access records from different tenants, the user will receive 'Tenant is not found' exception.
+```bash
+curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X POST {host_url}/tenants/apply-migrations
+```
 
 ## Create a new tenant
 High level algorithm to create tenants:
@@ -132,6 +150,20 @@ read a product
 ```bash
 curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X GET {host_url}/products/{productId}
 ```
+
+## Order Creation & Payment handling
+
+Customer can place a new order.
+A new Order will have payment status = unpaid. Thus, user must pay in order to trigger the order processing.
+The new Order placed will be published to the order_created event.
+The email sender microservice will consume the order_created event. Then, it will send the Your New order email. 
+In this situation, payment will be simulated via link provided in the incoming email about Your New Order.
+
+place a new order
+```bash
+curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenCustomer}" -X POST -d '{"productId": "Product ID"}' {host_url}/orders
+```
+
 
 ## Stay in touch
 

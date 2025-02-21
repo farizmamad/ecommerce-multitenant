@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Public } from '../common/decorators/public.decorator';
 import { TenantGuard } from '../common/guards/tenant.guard';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { TenantService } from './tenant.service';
@@ -9,6 +10,7 @@ export class TenantController {
     private tenantService: TenantService,
   ) {}
 
+  @Public()
   @Post()
   async createTenant(@Body() createTenantDto: CreateTenantDto) {
     return this.tenantService.createTenant(createTenantDto);
@@ -19,6 +21,11 @@ export class TenantController {
   async getOneTenant(@Request() req) {
     const tenantId = req['tenant']?.id;
     return this.tenantService.findById(tenantId);
+  }
+
+  @Post('apply-migrations-management')
+  async applyMigrationsToManagementDatabase() {
+    return this.tenantService.applyMigrationsToManagementDatabase();
   }
 
   @Post('apply-migrations')

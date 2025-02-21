@@ -26,7 +26,7 @@ export class TenantGuard implements CanActivate {
     if (!tenant) {
       throw new UnauthorizedException('Invalid tenant');
     }
-
+    
     request.tenant = tenant;
     return true;
   }
