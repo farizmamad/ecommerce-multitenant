@@ -24,6 +24,7 @@ model Tenant {
   updatedAt DateTime @updatedAt
 
   User User[]
+  Product Product[]
 }
 
 model User {
@@ -36,6 +37,17 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  tenantId String?
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
+}
+
+model Product {
+  id String  @default(uuid()) @id
+  name String
+  price Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
   tenantId String?
   tenant Tenant? @relation(fields: [tenantId], references: [id])
 }

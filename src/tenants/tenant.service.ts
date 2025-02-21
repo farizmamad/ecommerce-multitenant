@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { ITenant } from '../common/interfaces/tenant.interface';
@@ -105,5 +105,11 @@ export class TenantService {
     await this.tenantMigrationService.applyMigrations(tenant);
     
     return new TenantDto(tenant);
+  }
+
+  async applyMigrationsToTenantDatabase(tenantId: string) {
+    const tenant = await this.findById(tenantId);
+    if (!tenant) throw new NotFoundException('Unknown tenant');
+    await this.tenantMigrationService.applyMigrations(tenant);
   }
 }

@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { TenantGuard } from 'src/common/guards/tenant.guard';
+import { TenantGuard } from '../common/guards/tenant.guard';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { TenantService } from './tenant.service';
 
@@ -19,5 +19,12 @@ export class TenantController {
   async getOneTenant(@Request() req) {
     const tenantId = req['tenant']?.id;
     return this.tenantService.findById(tenantId);
+  }
+
+  @Post('apply-migrations')
+  @UseGuards(TenantGuard)
+  async applyMigrationsToTenant(@Request() req) {
+    const tenantId = req['tenant']?.id;
+    return this.tenantService.applyMigrationsToTenantDatabase(tenantId);
   }
 }

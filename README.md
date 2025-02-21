@@ -55,6 +55,15 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Multi-tenancy Security
+
+Every request guarded by TenantGuard will get the Tenant information in the Middleware.
+
+Admin users can only manage its Tenant records.
+Customer users can read allowed records from every Tenants.
+
+If Admin tries to access records from different tenants, the user will receive 'Tenant is not found' exception.
+
 ## Create a new tenant
 High level algorithm to create tenants:
 1. Create database name from input. Then, act as admin and create a new tenant database using the database name.
@@ -92,6 +101,36 @@ High level algorithm to login:
 
 ```bash
 curl -H "Content-Type: application/json" -X POST -d '{"name": "Customer 1","username": "customer1","password": "Customer1#","role": "Customer"}' {host_url}/users
+```
+
+## Product Management
+
+Admin can create, read, update and delete products in its Tenant.
+Customer can read products from every Tenant.
+
+create a new product
+```bash
+curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenAdminTenant}" -X POST -d '{"name": "Product 1","price": 5000}' {host_url}/products
+```
+
+update a product
+```bash
+curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenAdminTenant}" -X PATCH -d '{"name": "Product 1","price": 5000}' {host_url}/products/{productId}
+```
+
+delete a product
+```bash
+curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenAdminTenant}" -X DELETE {host_url}/products/{productId}
+```
+
+read all products
+```bash
+curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X GET {host_url}/products?limit=10&page=1&search=
+```
+
+read a product
+```bash
+curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X GET {host_url}/products/{productId}
 ```
 
 ## Stay in touch

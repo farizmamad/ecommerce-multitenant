@@ -22,6 +22,10 @@ export class TenantPrismaClientService {
   }
   
   // Put proxy methods to the actual Prisma client here
+  async product() {
+    const client = await this.getClient();
+    return client.product;
+  }
   
   /**
    * 
