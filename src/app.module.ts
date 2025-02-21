@@ -7,6 +7,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { TenantMiddleware } from './tenants/middlewares/tenant.middleware';
 import { TenantModule } from './tenants/tenant.module';
 import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { DatabaseModule } from './database/database.module';
     PrismaModule,
     DatabaseModule,
     TenantModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -25,6 +29,6 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(TenantMiddleware)
-      .forRoutes({ path: 'users', method: RequestMethod.ALL });
+      .forRoutes({ path: 'products', method: RequestMethod.ALL });
   }
 }

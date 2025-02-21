@@ -66,6 +66,34 @@ High level algorithm to create tenants:
 curl -H "Content-Type: application/json" -X POST -d '{"name":"Tenant 1","subdomain":"tenant1"}' {host_url}/tenants
 ```
 
+## Create a new User
+High level algorithm to create users:
+1. Create a new User. If role == Admin, tenantId is required.
+2. If tenantId is defined, check the existence of the Tenant.
+3. The server will hash the user's password.
+4. Save the new User to the user table.
+5. Return the new user ID.
+
+New Customer User
+```bash
+curl -H "Content-Type: application/json" -X POST -d '{"name": "Customer 1","username": "customer1","password": "Customer1#","role": "Customer"}' {host_url}/users
+```
+
+New Admin User
+```bash
+curl -H "Content-Type: application/json" -X POST -d '{"name": "Admin 1","username":"admin1","password":"AdminAdmin1#","role":"Admin","tenantId":"0a98de95-9486-4458-97d3-dfcb197b0aa1"}' {host_url}/users
+```
+
+## Login
+High level algorithm to login:
+1. Login using username and password.
+2. The server compares the input password vs hashed password
+4. Return the access token, which contains user ID, username, role, and the corresponding tenant ID.
+
+```bash
+curl -H "Content-Type: application/json" -X POST -d '{"name": "Customer 1","username": "customer1","password": "Customer1#","role": "Customer"}' {host_url}/users
+```
+
 ## Stay in touch
 
 - Author - Ahmad Fariz
