@@ -29,14 +29,29 @@ Node.js v20
 PostgreSQL
 Redis
 
+## Multi-tenancy Strategy
+
+The application has 2 types of database:
+1. Management Database, consists of "Tenants" and "Users" table.
+2. Tenants Database, consists of "Products" and "Orders". Each Tenant owned a database, so the data are separated.
+
+Implementation:
+1. The application connects to the Management Database from the startup.
+2. The application lazily connects to the Tenant Database in a Request-scope.
+
+Entity Relationship:
+1. Tenant - User: One-to-many
+2. Product - Order: One-to-many
+
+Product also store tenantId.
+Order also store tenantId, customerId = User.id, and productId.
+
 ## Multi-tenancy Security
 
-Every request guarded by TenantGuard will get the Tenant information in the Middleware.
-
-Admin users can only manage its Tenant records.
-Customer users can read allowed records from every Tenants.
-
-If Admin tries to access records from different tenants, the user will receive 'Tenant is not found' exception.
+Every request (except to tenants and users) will get the Tenant information in the Middleware.
+Every request guarded by TenantGuard will check somethings:
+- Customer users can read allowed records from every Tenants.
+- Admin users can only manage its Tenant records. If Admin tries to access records from different tenants, the user will receive 'Tenant is not found' exception.
 
 ## Installation
 
@@ -76,12 +91,6 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Apply Migrations to tenants databases
-
-```bash
-curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X POST {host_url}/tenants/apply-migrations
-```
-
 ## Create a new tenant
 High level algorithm to create tenants:
 1. Create database name from input. Then, act as admin and create a new tenant database using the database name.
@@ -103,22 +112,28 @@ High level algorithm to create users:
 
 New Customer User
 ```bash
-curl -H "Content-Type: application/json" -X POST -d '{"name": "Customer 1","username": "customer1","password": "Customer1#","role": "Customer"}' {host_url}/users
+curl -H "Content-Type: application/json" -X POST -d '{"name": "Customer 1","email": "customer1@gmail.com","password": "Customer1#","role": "Customer"}' {host_url}/users
 ```
 
 New Admin User
 ```bash
-curl -H "Content-Type: application/json" -X POST -d '{"name": "Admin 1","username":"admin1","password":"AdminAdmin1#","role":"Admin","tenantId":"0a98de95-9486-4458-97d3-dfcb197b0aa1"}' {host_url}/users
+curl -H "Content-Type: application/json" -X POST -d '{"name": "Admin 1","email":"admin1@gmail.com","password":"AdminAdmin1#","role":"Admin","tenantId":{tenantId} }' {host_url}/users
 ```
 
 ## Login
 High level algorithm to login:
-1. Login using username and password.
+1. Login using email and password.
 2. The server compares the input password vs hashed password
-4. Return the access token, which contains user ID, username, role, and the corresponding tenant ID.
+4. Return the access token, which contains user ID, email, role, and the corresponding tenant ID.
 
 ```bash
-curl -H "Content-Type: application/json" -X POST -d '{"name": "Customer 1","username": "customer1","password": "Customer1#","role": "Customer"}' {host_url}/users
+curl -H "Content-Type: application/json" -X POST -d '{"email": "customer1@gmail.com","password": "Customer1#","role": "Customer"}' {host_url}/users
+```
+
+## Apply Migrations to tenants databases using Admin user assigned to the Tenant
+
+```bash
+curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X POST {host_url}/tenants/apply-migrations
 ```
 
 ## Product Management
@@ -153,17 +168,17 @@ curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Autho
 
 ## Order Creation & Payment handling
 
-Customer can place a new order.
-A new Order will have payment status = unpaid. Thus, user must pay in order to trigger the order processing.
-The new Order placed will be published to the order_created event.
-The email sender microservice will consume the order_created event. Then, it will send the Your New order email. 
-In this situation, payment will be simulated via link provided in the incoming email about Your New Order.
+High Level Algorithm:
+1. Customer can place a new order.
+2. A new Order will have payment status = unpaid. Thus, user must pay in order to trigger the order processing.
+3. The new Order placed will be published to the order_created event.
+4. The email sender microservice will consume the order_created event. Then, it will send the Your New order email. 
+5. In this situation, payment will be simulated via link provided in the incoming email about Your New Order.
 
 place a new order
 ```bash
 curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenCustomer}" -X POST -d '{"productId": "Product ID"}' {host_url}/orders
 ```
-
 
 ## Stay in touch
 

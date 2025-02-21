@@ -14,11 +14,12 @@ import { Prisma } from '@prisma/client';
 export class ProductsService {
   constructor(private tenantClient: TenantPrismaClientService) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Pick<Product, 'id'>> {
+  async create(tenant: ITenant, createProductDto: CreateProductDto): Promise<Pick<Product, 'id'>> {
     const productDb = await this.tenantClient.product();
     const data = {
       name: createProductDto.name,
       price: createProductDto.price,
+      tenantId: tenant?.id,
     };
     const result = await productDb.create({ data });
     return { id: result.id };

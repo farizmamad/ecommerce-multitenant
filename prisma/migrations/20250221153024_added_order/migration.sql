@@ -8,6 +8,11 @@ CREATE TABLE "Order" (
     "paymentStatus" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "customerEmail" TEXT NOT NULL,
+    "customerId" TEXT NOT NULL,
+    "customerName" TEXT NOT NULL,
+    "tenantId" TEXT,
+    "paymentUrl" TEXT NOT NULL,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
 );

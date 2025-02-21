@@ -8,4 +8,5 @@ export interface IOrder {
   total: number;
   paidAt?: Date;
   paymentUrl?: string;
+  tenantId?: string;
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { TenantGuard } from '../common/guards/tenant.guard';
@@ -15,8 +15,9 @@ export class ProductsController {
 
   @Post()
   @Roles(UserRole.ADMIN)
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  create(@Request() req, @Body() createProductDto: CreateProductDto) {
+    const tenant = req['tenant'];
+    return this.productsService.create(tenant, createProductDto);
   }
 
   @Get()

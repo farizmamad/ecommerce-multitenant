@@ -1,4 +1,4 @@
-import { IsAlphanumeric, IsDefined, IsEnum, IsNotEmpty, IsOptional, IsString, IsStrongPassword, Length } from 'class-validator';
+import { IsDefined, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, IsStrongPassword, Length } from 'class-validator';
 import { UserRole } from '../enums/user-role.enum';
 
 export class CreateUserDto {
@@ -9,9 +9,9 @@ export class CreateUserDto {
 
   @IsDefined()
   @IsString()
-  @IsAlphanumeric()
+  @IsEmail()
   @IsNotEmpty()
-  username: string;
+  email: string;
 
   @IsDefined()
   @IsString()

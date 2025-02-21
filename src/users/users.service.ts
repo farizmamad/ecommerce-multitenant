@@ -10,17 +10,17 @@ import { User } from './entities/user.entity';
 export class UsersService {
   constructor(private managementClient: ManagementPrismaClientService) {}
 
-  async findOneWithSecret(username: string): Promise<User | undefined> {
+  async findOneWithSecret(email: string): Promise<User | undefined> {
     const userDb = await this.managementClient.user();
     return await userDb.findUnique({
-      where: { username },
+      where: { email },
     });
   }
 
   async findOne(id: string): Promise<IUser | undefined> {
     const userDb = await this.managementClient.user();
     return await userDb.findUnique({
-      select: { id: true, name: true, role: true, username: true, tenant: true, tenantId: true },
+      select: { id: true, name: true, role: true, email: true, tenant: true, tenantId: true },
       where: { id },
     });
   }
@@ -33,8 +33,8 @@ export class UsersService {
     const userDb = await this.managementClient.user();
 
     // make sure not a duplicate
-    const exists = await userDb.findFirst({ where: { username: createUserDto.username }});
-    if (exists) throw new BadRequestException(`Cannot use username: ${createUserDto.username}`);
+    const exists = await userDb.findFirst({ where: { email: createUserDto.email }});
+    if (exists) throw new BadRequestException(`Cannot use email: ${createUserDto.email}`);
 
     // make sure tenant exists
     if (createUserDto.tenantId) {
@@ -45,7 +45,7 @@ export class UsersService {
 
     const user = {
       name: createUserDto.name,
-      username: createUserDto.username,
+      email: createUserDto.email,
       salt: bcrypt.genSaltSync(12),
       password: createUserDto.password,
       role: createUserDto.role,
