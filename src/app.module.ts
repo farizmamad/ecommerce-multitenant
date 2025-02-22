@@ -15,6 +15,7 @@ import { TenantMiddleware } from './tenants/middlewares/tenant.middleware';
 import { TenantModule } from './tenants/tenant.module';
 import { UsersModule } from './users/users.module';
 import Keyv = require("keyv");
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -22,6 +23,10 @@ import Keyv = require("keyv");
       isGlobal: true,
       load: [databaseConfig],
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 10,
+    }]),
     PrismaModule,
     DatabaseModule,
     TenantModule,

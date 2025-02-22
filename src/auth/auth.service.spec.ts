@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaModule } from '../prisma/prisma.module';
 import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -12,6 +13,10 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({ isGlobal: true }),
+        ThrottlerModule.forRoot([{
+          ttl: 60000,
+          limit: 10,
+        }]),
         JwtModule.register({
           global: true,
           secret: 'secret',
