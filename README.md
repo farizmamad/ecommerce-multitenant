@@ -79,6 +79,22 @@ Find all operations are wrapped into pagination request and response to control 
 Pagination request parameters: limit, page, search
 Pagination response: totalDocuments, limit, page, hasNextPage, hasPrevPage
 
+## Testing
+
+Current test coverage is 
+File                                  | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s          
+--------------------------------------|---------|----------|---------|---------|----------------------------
+All files                             |   36.01 |     5.33 |   18.18 |    32.8 |         
+
+```bash
+$ npm run test:cov
+```
+
+## OpenAPI Documentation
+
+Access the API documentation in `{{host}}/api`. Example in [http://localhost:3000/api](http://localhost:3000/api)
+
+
 ## Installation
 
 ```bash
@@ -88,7 +104,7 @@ $ npm install
 ## Deploy Database migrations
 
 ```bash
-npx prisma migrate deploy
+$ npx prisma migrate deploy
 ```
 
 ## Running the app
@@ -125,7 +141,7 @@ High level algorithm to create tenants:
 4. return the new tenant record.
 
 ```bash
-curl -H "Content-Type: application/json" -X POST -d '{"name":"Tenant 1","subdomain":"tenant1"}' {host_url}/tenants
+$ curl -H "Content-Type: application/json" -X POST -d '{"name":"Tenant 1","subdomain":"tenant1"}' {host_url}/tenants
 ```
 
 ## Create a new User
@@ -138,12 +154,12 @@ High level algorithm to create users:
 
 New Customer User
 ```bash
-curl -H "Content-Type: application/json" -X POST -d '{"name": "Customer 1","email": "customer1@gmail.com","password": "Customer1#","role": "Customer"}' {host_url}/users
+$ curl -H "Content-Type: application/json" -X POST -d '{"name": "Customer 1","email": "customer1@gmail.com","password": "Customer1#","role": "Customer"}' {host_url}/users
 ```
 
 New Admin User
 ```bash
-curl -H "Content-Type: application/json" -X POST -d '{"name": "Admin 1","email":"admin1@gmail.com","password":"AdminAdmin1#","role":"Admin","tenantId":{tenantId} }' {host_url}/users
+$ curl -H "Content-Type: application/json" -X POST -d '{"name": "Admin 1","email":"admin1@gmail.com","password":"AdminAdmin1#","role":"Admin","tenantId":{tenantId} }' {host_url}/users
 ```
 
 ## Login
@@ -153,13 +169,13 @@ High level algorithm to login:
 4. Return the access token, which contains user ID, email, role, and the corresponding tenant ID.
 
 ```bash
-curl -H "Content-Type: application/json" -X POST -d '{"email": "customer1@gmail.com","password": "Customer1#","role": "Customer"}' {host_url}/users
+$ curl -H "Content-Type: application/json" -X POST -d '{"email": "customer1@gmail.com","password": "Customer1#","role": "Customer"}' {host_url}/users
 ```
 
 ## Apply Migrations to tenants databases using Admin user assigned to the Tenant
 
 ```bash
-curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X POST {host_url}/tenants/apply-migrations
+$ curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X POST {host_url}/tenants/apply-migrations
 ```
 
 ## Product Management
@@ -169,27 +185,27 @@ Customer can read products from every Tenant.
 
 create a new product
 ```bash
-curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenAdminTenant}" -X POST -d '{"name": "Product 1","price": 5000}' {host_url}/products
+$ curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenAdminTenant}" -X POST -d '{"name": "Product 1","price": 5000}' {host_url}/products
 ```
 
 update a product
 ```bash
-curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenAdminTenant}" -X PATCH -d '{"name": "Product 1","price": 5000}' {host_url}/products/{productId}
+$ curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenAdminTenant}" -X PATCH -d '{"name": "Product 1","price": 5000}' {host_url}/products/{productId}
 ```
 
 delete a product
 ```bash
-curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenAdminTenant}" -X DELETE {host_url}/products/{productId}
+$ curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenAdminTenant}" -X DELETE {host_url}/products/{productId}
 ```
 
 read all products
 ```bash
-curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X GET {host_url}/products?limit=10&page=1&search=
+$ curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X GET {host_url}/products?limit=10&page=1&search=
 ```
 
 read a product
 ```bash
-curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X GET {host_url}/products/{productId}
+$ curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X GET {host_url}/products/{productId}
 ```
 
 Product data retrieved from read action is stored to cache REDIS for faster read performance.
@@ -205,7 +221,7 @@ High Level Algorithm:
 
 place a new order
 ```bash
-curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenCustomer}" -X POST -d '{"productId": "Product ID"}' {host_url}/orders
+$ curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {tokenCustomer}" -X POST -d '{"productId": "Product ID"}' {host_url}/orders
 ```
 
 ## Stay in touch

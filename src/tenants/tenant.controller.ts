@@ -3,6 +3,7 @@ import { Public } from '../common/decorators/public.decorator';
 import { TenantGuard } from '../common/guards/tenant.guard';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { TenantService } from './tenant.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('tenants')
 export class TenantController {
@@ -23,11 +24,13 @@ export class TenantController {
     return this.tenantService.findById(tenantId);
   }
 
+  @ApiBearerAuth()
   @Post('apply-migrations-management')
   async applyMigrationsToManagementDatabase() {
     return this.tenantService.applyMigrationsToManagementDatabase();
   }
 
+  @ApiBearerAuth()
   @Post('apply-migrations')
   @UseGuards(TenantGuard)
   async applyMigrationsToTenant(@Request() req) {

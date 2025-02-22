@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { ECOMMERCE_SERVICE_TOKEN, MESSAGE_PATTERNS } from 'src/common/constants/microservices.constant';
 import { Public } from 'src/common/decorators/public.decorator';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -11,6 +12,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { PaymentQueryDto } from './dto/payment-query.dto';
 import { OrdersService } from './orders.service';
 
+@ApiBearerAuth()
 @Controller('orders')
 export class OrdersController {
   constructor(

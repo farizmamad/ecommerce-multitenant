@@ -30,6 +30,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/microservices": "^11.0.10",
     "@nestjs/platform-express": "^11.0.10",
+    "@nestjs/swagger": "^11.0.4",
     "@nestjs/throttler": "^6.4.0",
     "@prisma/client": "^6.4.0",
     "bcrypt": "^5.1.1",

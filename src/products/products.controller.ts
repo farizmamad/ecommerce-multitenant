@@ -1,5 +1,6 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { Cache } from 'cache-manager';
 import { CACHE_TTL } from '../common/constants/cache.constants';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -11,6 +12,7 @@ import { FindAllProductDto } from './dto/find-all-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
 
+@ApiBearerAuth()
 @Controller('products')
 @UseGuards(RolesGuard, TenantGuard)
 export class ProductsController {
