@@ -29,6 +29,12 @@ Node.js v20
 PostgreSQL
 Redis
 
+## Database ORM
+
+Prisma is chosen as the database ORM because of it has the ability to abstract the database implementation. It provides the same approach to either SQL or NoSQL.
+
+The power of using Prisma is its type-safety approach. The migrations deployed are then build into TypeScript types and stored inside the node_modules. Thus, it makes the developer experience type-safety when dealing with data models.
+
 ## Multi-tenancy Strategy
 
 The application has 2 types of database:
@@ -52,6 +58,26 @@ Every request (except to tenants and users) will get the Tenant information in t
 Every request guarded by TenantGuard will check somethings:
 - Customer users can read allowed records from every Tenants.
 - Admin users can only manage its Tenant records. If Admin tries to access records from different tenants, the user will receive 'Tenant is not found' exception.
+
+## Caching
+
+This application employs caching to increase the query performance. The chosen database to do caching is Redis because it is designed for read-heavy operation, thus it fit to the goal to increase the query speed.
+
+It is also claimed that it is highly scalabile, resilient, and flexible to any infrastructure architectures.
+
+## REST API and Microservices
+
+This application designed to be built on top of REST API and Microservices.
+
+REST API are useful for handling request from external clients that want to interact with our system entities (e.g. tenants, users, products, orders).
+
+Microservices are useful for handling either request-response or asynchronous operations. But in this application we only use asynchronous operation to handling order created event (e.g. sending order created email).
+
+## Pagination
+
+Find all operations are wrapped into pagination request and response to control the response size and also increasing query performance.
+Pagination request parameters: limit, page, search
+Pagination response: totalDocuments, limit, page, hasNextPage, hasPrevPage
 
 ## Installation
 
