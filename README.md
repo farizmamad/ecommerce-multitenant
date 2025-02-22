@@ -166,6 +166,8 @@ read a product
 curl -H "Content-Type: application/json" -H "X-TENANT-ID: {TENANT ID}" -H "Authorization: Bearer {token}" -X GET {host_url}/products/{productId}
 ```
 
+Product data retrieved from read action is stored to cache REDIS for faster read performance.
+
 ## Order Creation & Payment handling
 
 High Level Algorithm:

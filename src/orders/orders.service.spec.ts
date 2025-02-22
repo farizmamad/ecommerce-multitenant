@@ -1,7 +1,8 @@
+import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProductsModule } from '../products/products.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { ProductsModule } from '../products/products.module';
 import { OrdersService } from './orders.service';
 
 describe('OrdersService', () => {
@@ -12,6 +13,7 @@ describe('OrdersService', () => {
       imports: [
         ConfigModule.forRoot({ isGlobal: true }),
         PrismaModule,
+        CacheModule.register({ isGlobal: true}),
         ProductsModule,
       ],
       providers: [OrdersService],

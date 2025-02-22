@@ -1,5 +1,7 @@
+import KeyvRedis from '@keyv/redis';
+import { CacheModule } from '@nestjs/cache-manager';
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -12,6 +14,7 @@ import { ProductsModule } from './products/products.module';
 import { TenantMiddleware } from './tenants/middlewares/tenant.middleware';
 import { TenantModule } from './tenants/tenant.module';
 import { UsersModule } from './users/users.module';
+import Keyv = require("keyv");
 
 @Module({
   imports: [
@@ -22,6 +25,20 @@ import { UsersModule } from './users/users.module';
     PrismaModule,
     DatabaseModule,
     TenantModule,
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: (configService: ConfigService) => {
+        const keyvRedis = new KeyvRedis({
+          url: `redis://${configService.getOrThrow('CACHE_HOST')?? 'localhost'}:${configService.getOrThrow('CACHE_PORT') ?? '6379'}`,
+        });
+        return {
+          stores: [
+            new Keyv(keyvRedis),
+          ],
+        };
+      },
+      inject: [ConfigService],
+    }),
     AuthModule,
     UsersModule,
     ProductsModule,

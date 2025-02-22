@@ -1,4 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Cache } from 'cache-manager';
+import { CACHE_TTL } from '../common/constants/cache.constants';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { TenantGuard } from '../common/guards/tenant.guard';
@@ -11,7 +14,10 @@ import { ProductsService } from './products.service';
 @Controller('products')
 @UseGuards(RolesGuard, TenantGuard)
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly productsService: ProductsService,
+  ) {}
 
   @Post()
   @Roles(UserRole.ADMIN)
@@ -22,25 +28,36 @@ export class ProductsController {
 
   @Get()
   @Roles(UserRole.ADMIN, UserRole.CUSTOMER)
-  findAll(@Query() query: FindAllProductDto) {
-    return this.productsService.findAll(query);
+  async findAll(@Request() req, @Query() query: FindAllProductDto) {
+    const tenant = req['tenant'];
+
+    const cacheKey = `${tenant.id}:findAllProducts:${JSON.stringify(query)}`;
+    
+    const cacheData = await this.cacheManager.get(cacheKey);  
+    if (cacheData) return cacheData;
+
+    const result = await this.productsService.findAll(query);
+    
+    await this.cacheManager.set(cacheKey, result, CACHE_TTL);
+
+    return result;
   }
 
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.CUSTOMER)
-  findOne(@Param('id') id: string) {
-    return this.productsService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.productsService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(UserRole.ADMIN)
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(id, updateProductDto);
+  async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+    return await this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')
   @Roles(UserRole.ADMIN)
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.productsService.remove(id);
   }
 }
