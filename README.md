@@ -94,6 +94,12 @@ $ npm run test:cov
 
 Access the API documentation in `{{host}}/api`. Example in [http://localhost:3000/api](http://localhost:3000/api)
 
+## Postman Collection and Environment
+
+Optionally, you can use Postman client to access the application. Please use the related files.
+1. E-Commerce Multitenant Dev Env.postman_environment.json
+2. E-Commerce Multitenant.postman_collection.json
+
 
 ## Installation
 
